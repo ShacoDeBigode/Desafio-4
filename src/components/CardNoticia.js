@@ -1,4 +1,3 @@
-// src/components/CardNoticia.js
 import React from 'react';
 import { TouchableOpacity, Text, View, StyleSheet } from 'react-native';
 
@@ -21,19 +20,21 @@ const styles = StyleSheet.create({
     padding: 18,
     marginHorizontal: 15,
     marginVertical: 10,
-    backgroundColor: '#FFFFFF',
+    // Fundo branco puro
+    backgroundColor: '#FFFFFF', 
     borderRadius: 12,
     
-    elevation: 6, 
-    
+    // NOVO: Sombra Mais Forte para Efeito 3D/Elevado (Estilo Minimalista)
+    elevation: 8, 
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4.65,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15, 
+    shadowRadius: 5.65,
   },
   categoriaTag: {
     alignSelf: 'flex-start',
-    backgroundColor: '#FF5733', 
+    // Cor de destaque (Verde vibrante do exemplo)
+    backgroundColor: '#00C853', 
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 6,
@@ -49,10 +50,12 @@ const styles = StyleSheet.create({
     fontSize: 19,
     fontWeight: 'bold', 
     marginBottom: 8,
+    // Texto Principal Preto
     color: '#222222' 
   },
   resumo: { 
     fontSize: 14, 
+    // Texto Secundário Cinza
     color: '#555555'
   },
 });

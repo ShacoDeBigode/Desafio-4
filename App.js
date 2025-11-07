@@ -1,5 +1,3 @@
-// App.js
-// CRÍTICO: Esta linha DEVE ser a primeira para resolver erros nativos de inicialização
 import 'react-native-gesture-handler'; 
 
 import React from 'react';
@@ -7,40 +5,42 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-// CORREÇÃO: MUDANDO PARA A IMPORTAÇÃO DO EXPO
+// Correção: Utilização do pacote nativo do Expo para ícones para garantir a renderização.
 import { Ionicons } from '@expo/vector-icons'; 
 
 import { SobreScreen, DetalheNoticiaScreen, ListaTecnologiaScreen, ListaEsportesScreen } from './src/screens/Screens'; 
 
-// Cores para o Novo Design
-const PRIMARY_COLOR = '#1A5276'; // Azul escuro e profundo (Header, Drawer Ativo)
-const ACCENT_COLOR = '#4A90E2'; // Azul claro para destaque (mantido)
+// Definição das cores para consistência visual.
+const PRIMARY_COLOR = '#1A5276'; // Mantido para o Drawer Ativo
+const ACCENT_COLOR = '#00C853'; // Verde Vibrante
 
-// Criação dos Navigators
+// Inicialização dos Navigators.
 const Drawer = createDrawerNavigator(); 
 const Tab = createBottomTabNavigator(); 
 const Stack = createStackNavigator(); 
 
-// Configuração base do Header (aplicada a todos os Stacks)
+// Configuração padrão dos Headers de todas as Stacks.
 const stackScreenOptions = {
+    // NOVO: Header Fundo Branco
     headerStyle: {
-        backgroundColor: PRIMARY_COLOR, // Cabeçalho escuro
+        backgroundColor: '#FFFFFF', 
     },
-    headerTintColor: '#FFFFFF', // Texto do cabeçalho branco
+    // NOVO: Texto do Header Preto
+    headerTintColor: '#000000', 
     headerTitleStyle: {
         fontWeight: 'bold',
     },
 };
 
-// --- 1. Stack Navigator (Tecnologia) ---
+// Stack Navigator para a seção Tecnologia.
 const TecnologiaStack = () => (
   <Stack.Navigator screenOptions={stackScreenOptions}>
-    <Stack.Screen name="ListaTecnologia" component={ListaTecnologiaScreen} options={{ title: 'Tecnologia' }} />
+    <Stack.Screen name="ListaTecnologia" component={ListaTecnologiaScreen} options={{ title: 'Notícias' }} />
     <Stack.Screen name="DetalheNoticia" component={DetalheNoticiaScreen} options={{ title: 'Detalhes' }} />
   </Stack.Navigator>
 );
 
-// --- 1. Stack Navigator (Esportes) ---
+// Stack Navigator para a seção Esportes.
 const EsportesStack = () => (
   <Stack.Navigator screenOptions={stackScreenOptions}>
     <Stack.Screen name="ListaEsportes" component={ListaEsportesScreen} options={{ title: 'Esportes' }} />
@@ -48,7 +48,7 @@ const EsportesStack = () => (
   </Stack.Navigator>
 );
 
-// --- 2. Tab Navigator (Abas Inferiores) ---
+// Tab Navigator para a navegação inferior das Notícias.
 const TabNews = () => (
   <Tab.Navigator
     screenOptions={({ route }) => ({
@@ -60,16 +60,16 @@ const TabNews = () => (
         } else if (route.name === 'Esportes') {
           iconName = 'trophy-outline'; 
         }
-        // USO CORRIGIDO DO IONICONS
+        // Uso do componente Ionicons importado do Expo.
         return <Ionicons name={iconName} size={size} color={color} />;
       },
-      // NOVO ESTILO DA BARRA INFERIOR 
-      tabBarActiveTintColor: PRIMARY_COLOR, // Ativo na cor do Header (Elegante)
-      tabBarInactiveTintColor: '#A0A0A0', // Cinza suave para inativo
+      // Estilização do Tab Bar.
+      tabBarActiveTintColor: ACCENT_COLOR, // Ativo na cor de destaque (verde)
+      tabBarInactiveTintColor: '#A0A0A0', 
       tabBarStyle: {
-        backgroundColor: '#FFFFFF', // Fundo branco puro
+        backgroundColor: '#FFFFFF', 
         borderTopWidth: 1,
-        borderTopColor: '#E0E0E0', // Linha divisória sutil
+        borderTopColor: '#E0E0E0', 
         paddingBottom: 5, 
         paddingTop: 5,
         height: 60, 
@@ -86,7 +86,7 @@ const TabNews = () => (
 );
 
 
-// --- 3. Drawer Navigator (Raiz do App) ---
+// Drawer Navigator como estrutura raiz do aplicativo.
 const App = () => {
   return (
     <NavigationContainer>
@@ -100,10 +100,10 @@ const App = () => {
             } else if (route.name === 'Sobre') {
               iconName = 'information-circle-outline';
             }
-            // USO CORRIGIDO DO IONICONS
+            // Uso do componente Ionicons importado do Expo.
             return <Ionicons name={iconName} size={size} color={color} />;
           },
-          // Estilo do Drawer
+          // Estilo do Drawer.
           drawerActiveTintColor: '#FFFFFF', 
           drawerActiveBackgroundColor: PRIMARY_COLOR, 
         })}
@@ -113,6 +113,7 @@ const App = () => {
           component={TabNews} 
           options={{ 
             title: 'Notícias',
+            // O Drawer Header usa a cor primária para maior destaque.
             headerStyle: { backgroundColor: PRIMARY_COLOR }, 
             headerTintColor: '#FFFFFF'
           }} 

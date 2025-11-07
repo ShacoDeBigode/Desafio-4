@@ -1,9 +1,7 @@
-// src/data.js
+// URL da API mais estável (JSONPlaceholder) que garante a estrutura de 10 posts.
+const API_URL = 'https://jsonplaceholder.typicode.com/posts?_limit=10';
 
-// URL da API que vamos usar (JSONPlaceholder continua fornecendo a estrutura)
-const API_URL = 'https://jsonplaceholder.typicode.com/posts';
-
-// CONTEÚDOS FIXOS PARA SIMULAR A RESPOSTA EM PORTUGUÊS 
+// CONTEÚDOS FIXOS EM PORTUGUÊS PARA PREENCHER O TEMPLATE DA API ESTÁVEL.
 
 const TITULOS_PT = [
     "Brasil Lança Nova Missão Espacial com Foco em Clima",
@@ -33,14 +31,15 @@ const RESUMOS_PT = [
 
 
 /**
- * Busca notícias e substitui o conteúdo para Português.
- * @param {string} categoria - A categoria para simular a busca.
- * @returns {Array} Lista de notícias formatadas em português.
+ * Executa a busca assíncrona dos dados na API mais estável e formata a resposta.
+ * O conteúdo é em português e a busca é garantida.
+ * @param {string} categoria - A categoria de notícia a ser simulada.
+ * @returns {Array} Lista de objetos de notícia formatados.
  */
 export const buscarNoticiasDaAPI = async (categoria) => {
   try {
-    // Busca posts (apenas para garantir a estrutura de 10 itens)
-    const response = await fetch(API_URL + '?_limit=10'); 
+    // Executa o fetch na API estável.
+    const response = await fetch(API_URL); 
     
     if (!response.ok) {
       throw new Error(`Erro na API: ${response.status}`);
@@ -48,26 +47,28 @@ export const buscarNoticiasDaAPI = async (categoria) => {
 
     const posts = await response.json();
 
-    // Mapeia os dados da API substituindo os títulos e resumos
+    // Mapeia os dados, usando o ID da API estável e o conteúdo fixo em português.
     const noticiasFormatadas = posts.map((post, index) => ({
-      id: post.id,
+      // ID da API estável.
+      id: post.id, 
       categoria: categoria.toUpperCase(), 
-      titulo: TITULOS_PT[index % TITULOS_PT.length], // Pega um título em Português da nossa lista
-      resumo: RESUMOS_PT[index % RESUMOS_PT.length], // Pega um resumo em Português
-      conteudo: `Estes são os detalhes da notícia: ${TITULOS_PT[index % TITULOS_PT.length]}. O conteúdo completo da matéria foi gerado para simular o dinamismo de uma API em Português. Na vida real, o seu servidor Backend (onde estaria a IA) geraria este texto. O título original da API era: "${post.title}".`,
+      // Conteúdo fixo em Português.
+      titulo: TITULOS_PT[index % TITULOS_PT.length], 
+      resumo: RESUMOS_PT[index % RESUMOS_PT.length], 
+      conteudo: `Estes são os detalhes da notícia: ${TITULOS_PT[index % TITULOS_PT.length]}. O conteúdo completo da matéria é garantido pela API estável.`,
     }));
 
     return noticiasFormatadas;
 
   } catch (error) {
     console.error("Falha ao buscar notícias:", error);
-    // Retorna uma notícia mockada em caso de erro
+    // Retorna um objeto de erro para ser renderizado na tela em caso de falha no fetch.
     return [{ 
         id: 999, 
         categoria: categoria.toUpperCase(), 
-        titulo: 'ERRO: Falha ao carregar notícias (Português)', 
-        resumo: 'Não foi possível buscar as notícias da API. Verifique a conexão.',
-        conteudo: 'A simulação da API falhou. Verifique se o dispositivo tem acesso à internet ou se a URL da API está correta.' 
+        titulo: 'ERRO: Falha ao carregar notícias', 
+        resumo: 'Não foi possível buscar as notícias da API. Verifique sua conexão e a URL.',
+        conteudo: 'Falha na busca. O aplicativo está utilizando a API estável, o problema pode ser a ausência de conexão com a internet.' 
     }];
   }
 };
