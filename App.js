@@ -1,5 +1,5 @@
 // App.js
-// 🚨 CRÍTICO: Esta linha DEVE ser a primeira para resolver erros nativos de inicialização
+// CRÍTICO: Esta linha DEVE ser a primeira para resolver erros nativos de inicialização
 import 'react-native-gesture-handler'; 
 
 import React from 'react';
@@ -7,7 +7,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import Icon from 'react-native-vector-icons/Ionicons'; 
+// CORREÇÃO: MUDANDO PARA A IMPORTAÇÃO DO EXPO
+import { Ionicons } from '@expo/vector-icons'; 
 
 import { SobreScreen, DetalheNoticiaScreen, ListaTecnologiaScreen, ListaEsportesScreen } from './src/screens/Screens'; 
 
@@ -54,15 +55,15 @@ const TabNews = () => (
       headerShown: false, 
       tabBarIcon: ({ color, size }) => {
         let iconName;
-        // Lógica dos ícones (mesmo que apareçam como quadrado, a lógica está certa)
         if (route.name === 'Tecnologia') {
           iconName = 'logo-react'; 
         } else if (route.name === 'Esportes') {
           iconName = 'trophy-outline'; 
         }
-        return <Icon name={iconName} size={size} color={color} />;
+        // USO CORRIGIDO DO IONICONS
+        return <Ionicons name={iconName} size={size} color={color} />;
       },
-      // 🚨 NOVO ESTILO DA BARRA INFERIOR 🚨
+      // NOVO ESTILO DA BARRA INFERIOR 
       tabBarActiveTintColor: PRIMARY_COLOR, // Ativo na cor do Header (Elegante)
       tabBarInactiveTintColor: '#A0A0A0', // Cinza suave para inativo
       tabBarStyle: {
@@ -99,7 +100,8 @@ const App = () => {
             } else if (route.name === 'Sobre') {
               iconName = 'information-circle-outline';
             }
-            return <Icon name={iconName} size={size} color={color} />;
+            // USO CORRIGIDO DO IONICONS
+            return <Ionicons name={iconName} size={size} color={color} />;
           },
           // Estilo do Drawer
           drawerActiveTintColor: '#FFFFFF', 

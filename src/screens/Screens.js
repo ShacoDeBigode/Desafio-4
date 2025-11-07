@@ -1,23 +1,23 @@
 // src/screens/Screens.js
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Button, ScrollView, Image, FlatList } from 'react-native';
+import React, { useEffect, useState } from 'react'; 
+import { View, Text, StyleSheet, Button, ScrollView, Image, FlatList, ActivityIndicator } from 'react-native';
 
-// Caminhos corrigidos para as pastas
-import { NOTICIAS_TECNOLOGIA, NOTICIAS_ESPORTES } from '../data'; 
+// CORREÇÃO DO CAMINHO: Agora o 'data.js' está no mesmo nível de 'screens' (dentro de src)
+import { buscarNoticiasDaAPI } from '../data.js'; 
 import CardNoticia from '../components/CardNoticia'; 
 
 // Importa a imagem local da pasta src/assets/
 import logoImage from '../assets/logo.png'; 
 
-// Cor de destaque usada no App.js
+// Cores para o Novo Design
 const ACCENT_COLOR = '#4A90E2'; 
+const PRIMARY_COLOR = '#1A5276';
 
 
-// --- Tela de Detalhes da Notícia ---
+// --- Tela de Detalhes da Notícia (Sem alterações) ---
 export const DetalheNoticiaScreen = ({ route, navigation }) => {
   const { noticia } = route.params;
 
-  // Customizar Headers (Regra 32)
   useEffect(() => {
     navigation.setOptions({
       title: noticia.titulo,
@@ -28,20 +28,20 @@ export const DetalheNoticiaScreen = ({ route, navigation }) => {
     <ScrollView style={styles.container}>
       <Text style={styles.detalheCategoria}>{noticia.categoria}</Text>
       <Text style={styles.detalheTitulo}>{noticia.titulo}</Text>
-      {/* 🚨 CONTEÚDO AGORA MAIOR E MAIS BONITO PARA LEITURA 🚨 */}
+      {/* CONTEÚDO AGORA MAIOR E MAIS BONITO PARA LEITURA */}
       <Text style={styles.detalheConteudo}>{noticia.conteudo}</Text>
     </ScrollView>
   );
 };
 
-// --- Tela Sobre (Drawer) ---
+// --- Tela Sobre (Drawer) (Sem alterações) ---
 export const SobreScreen = ({ navigation }) => {
   return (
     <View style={styles.sobreContainer}>
       <Text style={styles.sobreHeader}>Sobre</Text>
       
       <Image 
-        source={logoImage} // Usa a imagem importada
+        source={logoImage} 
         style={styles.sobreImage} 
       />
       
@@ -59,8 +59,23 @@ export const SobreScreen = ({ navigation }) => {
   );
 };
 
-// --- Telas de Lista (Rotas iniciais dos Stacks) ---
-const ListaNoticiasBase = ({ noticias, navigation, tituloLista }) => {
+// --- Telas de Lista (COM BUSCA ASSÍNCRONA) ---
+const ListaNoticiasBase = ({ navigation, tituloLista }) => {
+  const [noticias, setNoticias] = useState([]);
+  const [loading, setLoading] = useState(true); // Estado de carregamento
+
+  useEffect(() => {
+    // Função que chama a API
+    const carregarNoticias = async () => {
+      setLoading(true); // Inicia o carregamento
+      const dados = await buscarNoticiasDaAPI(tituloLista);
+      setNoticias(dados);
+      setLoading(false); // Finaliza o carregamento
+    };
+
+    carregarNoticias();
+  }, [tituloLista]); // Roda a cada vez que a aba for selecionada/montada
+
   const renderItem = ({ item }) => (
     <CardNoticia 
       noticia={item} 
@@ -71,26 +86,33 @@ const ListaNoticiasBase = ({ noticias, navigation, tituloLista }) => {
   return (
     <FlatList 
       ListHeaderComponent={() => (
-        // 🚨 NOVO TÍTULO DA SEÇÃO (EX: ESPORTES) 🚨
+        // Título da Seção
         <Text style={styles.secaoTitulo}>{tituloLista}</Text>
       )}
       data={noticias}
       renderItem={renderItem}
       keyExtractor={item => item.id.toString()}
-      style={styles.listaContainer} 
+      style={styles.listaContainer}
+      // Mostra o spinner de carregamento se estiver buscando
+      ListEmptyComponent={() => loading ? (
+        <ActivityIndicator size="large" color={ACCENT_COLOR} style={{ marginTop: 50 }} />
+      ) : (
+        <Text style={styles.erroTexto}>Nenhuma notícia encontrada.</Text>
+      )}
     />
   );
 };
 
 export const ListaTecnologiaScreen = ({ navigation }) => (
-  <ListaNoticiasBase noticias={NOTICIAS_TECNOLOGIA} navigation={navigation} tituloLista="Tecnologia" />
+  <ListaNoticiasBase navigation={navigation} tituloLista="Tecnologia" />
 );
 
 export const ListaEsportesScreen = ({ navigation }) => (
-  <ListaNoticiasBase noticias={NOTICIAS_ESPORTES} navigation={navigation} tituloLista="Esportes" />
+  <ListaNoticiasBase navigation={navigation} tituloLista="Esportes" />
 );
 
-// Estilos (Com estilização aplicada, fundo escuro e textos ajustados)
+
+// Estilos (Com estilização aplicada e fundo escuro)
 const styles = StyleSheet.create({
     // Estilos para a Tela DetalheNoticiaScreen
     container: { 
@@ -102,7 +124,7 @@ const styles = StyleSheet.create({
     secaoTitulo: {
         fontSize: 26,
         fontWeight: 'bold',
-        color: ACCENT_COLOR, // Usa a cor de destaque
+        color: ACCENT_COLOR, 
         paddingHorizontal: 15,
         paddingVertical: 15,
         marginBottom: 5,
@@ -128,12 +150,17 @@ const styles = StyleSheet.create({
       color: '#FFFFFF' 
     },
     detalheConteudo: { 
-      fontSize: 18, // 🚨 Aumentado para melhor leitura
-      lineHeight: 30, // 🚨 Espaçamento entre linhas maior
+      fontSize: 18, 
+      lineHeight: 30, 
       color: '#E0E0E0', 
       marginBottom: 20
     },
-    
+    erroTexto: {
+        fontSize: 16,
+        color: '#E0E0E0',
+        textAlign: 'center',
+        marginTop: 50
+    },
     // Estilos da Tela Sobre 
     sobreContainer: { flex: 1, padding: 20, alignItems: 'center', backgroundColor: '#fff' },
     sobreHeader: { fontSize: 28, fontWeight: 'bold', marginBottom: 20 },
