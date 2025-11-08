@@ -1,46 +1,47 @@
 import 'react-native-gesture-handler'; 
-
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-// Correção: Utilização do pacote nativo do Expo para ícones para garantir a renderização.
 import { Ionicons } from '@expo/vector-icons'; 
 
-import { SobreScreen, DetalheNoticiaScreen, ListaTecnologiaScreen, ListaEsportesScreen } from './src/screens/Screens'; 
+import { 
+    SobreScreen, 
+    DetalheNoticiaScreen, 
+    ListaTecnologiaScreen, 
+    ListaEsportesScreen,
+    ListaMusicaScreen, 
+    ListaTendenciasScreen, 
+    ListaModaScreen, 
+    ListaTVScreen 
+} from './src/screens/Screens'; 
 
-// Definição das cores para consistência visual.
-const PRIMARY_COLOR = '#1A5276'; // Mantido para o Drawer Ativo
-const ACCENT_COLOR = '#00C853'; // Verde Vibrante
+const PRIMARY_COLOR = '#6A0DAD'; 
+const ACCENT_COLOR = '#8A2BE2'; 
 
-// Inicialização dos Navigators.
 const Drawer = createDrawerNavigator(); 
 const Tab = createBottomTabNavigator(); 
 const Stack = createStackNavigator(); 
 
-// Configuração padrão dos Headers de todas as Stacks.
 const stackScreenOptions = {
-    // NOVO: Header Fundo Branco
     headerStyle: {
-        backgroundColor: '#FFFFFF', 
+        backgroundColor: PRIMARY_COLOR, 
     },
-    // NOVO: Texto do Header Preto
-    headerTintColor: '#000000', 
+    headerTintColor: '#FFFFFF', 
     headerTitleStyle: {
         fontWeight: 'bold',
     },
 };
 
-// Stack Navigator para a seção Tecnologia.
+// Pilhas de Navegação para cada Categoria
 const TecnologiaStack = () => (
   <Stack.Navigator screenOptions={stackScreenOptions}>
-    <Stack.Screen name="ListaTecnologia" component={ListaTecnologiaScreen} options={{ title: 'Notícias' }} />
+    <Stack.Screen name="ListaTecnologia" component={ListaTecnologiaScreen} options={{ title: 'Tecnologia' }} />
     <Stack.Screen name="DetalheNoticia" component={DetalheNoticiaScreen} options={{ title: 'Detalhes' }} />
   </Stack.Navigator>
 );
 
-// Stack Navigator para a seção Esportes.
 const EsportesStack = () => (
   <Stack.Navigator screenOptions={stackScreenOptions}>
     <Stack.Screen name="ListaEsportes" component={ListaEsportesScreen} options={{ title: 'Esportes' }} />
@@ -48,7 +49,36 @@ const EsportesStack = () => (
   </Stack.Navigator>
 );
 
-// Tab Navigator para a navegação inferior das Notícias.
+const MusicaStack = () => (
+  <Stack.Navigator screenOptions={stackScreenOptions}>
+    <Stack.Screen name="ListaMusica" component={ListaMusicaScreen} options={{ title: 'Música' }} />
+    <Stack.Screen name="DetalheNoticia" component={DetalheNoticiaScreen} options={{ title: 'Detalhes' }} />
+  </Stack.Navigator>
+);
+
+const TendenciasStack = () => (
+  <Stack.Navigator screenOptions={stackScreenOptions}>
+    <Stack.Screen name="ListaTendencias" component={ListaTendenciasScreen} options={{ title: 'Tendências' }} />
+    <Stack.Screen name="DetalheNoticia" component={DetalheNoticiaScreen} options={{ title: 'Detalhes' }} />
+  </Stack.Navigator>
+);
+
+const ModaStack = () => (
+  <Stack.Navigator screenOptions={stackScreenOptions}>
+    <Stack.Screen name="ListaModa" component={ListaModaScreen} options={{ title: 'Moda' }} />
+    <Stack.Screen name="DetalheNoticia" component={DetalheNoticiaScreen} options={{ title: 'Detalhes' }} />
+  </Stack.Navigator>
+);
+
+const TVStack = () => (
+  <Stack.Navigator screenOptions={stackScreenOptions}>
+    <Stack.Screen name="ListaTV" component={ListaTVScreen} options={{ title: 'TV' }} />
+    <Stack.Screen name="DetalheNoticia" component={DetalheNoticiaScreen} options={{ title: 'Detalhes' }} />
+  </Stack.Navigator>
+);
+
+
+// Tab Navigator para a navegação inferior (6 categorias)
 const TabNews = () => (
   <Tab.Navigator
     screenOptions={({ route }) => ({
@@ -56,37 +86,47 @@ const TabNews = () => (
       tabBarIcon: ({ color, size }) => {
         let iconName;
         if (route.name === 'Tecnologia') {
-          iconName = 'logo-react'; 
+          iconName = 'laptop-outline'; 
         } else if (route.name === 'Esportes') {
-          iconName = 'trophy-outline'; 
+          iconName = 'football-outline'; 
+        } else if (route.name === 'Música') {
+          iconName = 'musical-notes-outline'; 
+        } else if (route.name === 'Tendências') {
+          iconName = 'trending-up-outline'; 
+        } else if (route.name === 'Moda') {
+          iconName = 'body-outline'; 
+        } else if (route.name === 'TV') {
+          iconName = 'tv-outline'; 
         }
-        // Uso do componente Ionicons importado do Expo.
         return <Ionicons name={iconName} size={size} color={color} />;
       },
-      // Estilização do Tab Bar.
-      tabBarActiveTintColor: ACCENT_COLOR, // Ativo na cor de destaque (verde)
+      tabBarActiveTintColor: PRIMARY_COLOR, 
       tabBarInactiveTintColor: '#A0A0A0', 
       tabBarStyle: {
         backgroundColor: '#FFFFFF', 
         borderTopWidth: 1,
         borderTopColor: '#E0E0E0', 
-        paddingBottom: 5, 
+        // AUMENTA O PADDING E A ALTURA PARA RESPEITAR A BARRA NATIVA
+        paddingBottom: 10, 
         paddingTop: 5,
-        height: 60, 
+        height: 70, 
       },
       tabBarLabelStyle: {
-          fontSize: 12,
+          fontSize: 10, 
           fontWeight: '600',
       }
     })}
   >
-    <Tab.Screen name="Tecnologia" component={TecnologiaStack} options={{ title: 'Tecnologia' }} />
-    <Tab.Screen name="Esportes" component={EsportesStack} options={{ title: 'Esportes' }} />
+    <Tab.Screen name="Tecnologia" component={TecnologiaStack} options={{ title: 'Tech' }} />
+    <Tab.Screen name="Esportes" component={EsportesStack} options={{ title: 'Esporte' }} />
+    <Tab.Screen name="Música" component={MusicaStack} options={{ title: 'Música' }} />
+    <Tab.Screen name="Tendências" component={TendenciasStack} options={{ title: 'Trends' }} />
+    <Tab.Screen name="Moda" component={ModaStack} options={{ title: 'Moda' }} />
+    <Tab.Screen name="TV" component={TVStack} options={{ title: 'TV' }} />
   </Tab.Navigator>
 );
 
 
-// Drawer Navigator como estrutura raiz do aplicativo.
 const App = () => {
   return (
     <NavigationContainer>
@@ -100,10 +140,8 @@ const App = () => {
             } else if (route.name === 'Sobre') {
               iconName = 'information-circle-outline';
             }
-            // Uso do componente Ionicons importado do Expo.
             return <Ionicons name={iconName} size={size} color={color} />;
           },
-          // Estilo do Drawer.
           drawerActiveTintColor: '#FFFFFF', 
           drawerActiveBackgroundColor: PRIMARY_COLOR, 
         })}
@@ -113,7 +151,6 @@ const App = () => {
           component={TabNews} 
           options={{ 
             title: 'Notícias',
-            // O Drawer Header usa a cor primária para maior destaque.
             headerStyle: { backgroundColor: PRIMARY_COLOR }, 
             headerTintColor: '#FFFFFF'
           }} 

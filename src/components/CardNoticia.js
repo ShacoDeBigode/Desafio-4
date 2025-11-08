@@ -1,40 +1,53 @@
 import React from 'react';
-import { TouchableOpacity, Text, View, StyleSheet } from 'react-native';
+import { TouchableOpacity, Text, View, StyleSheet, Image } from 'react-native';
 
 const CardNoticia = ({ noticia, onPress }) => {
   return (
     <TouchableOpacity style={styles.card} onPress={onPress}>
-      {/* Categoria com visual de TAG */}
-      <View style={styles.categoriaTag}>
-        <Text style={styles.categoriaTexto}>{noticia.categoria}</Text>
-      </View>
+      {/* NOVO: Componente de Imagem no topo */}
+      <Image 
+        source={{ uri: noticia.imagemUrl }}
+        style={styles.imagem}
+      />
       
-      <Text style={styles.titulo}>{noticia.titulo}</Text>
-      <Text style={styles.resumo}>{noticia.resumo}</Text>
+      <View style={styles.infoContainer}>
+        {/* Categoria com visual de TAG */}
+        <View style={styles.categoriaTag}>
+          <Text style={styles.categoriaTexto}>{noticia.categoria}</Text>
+        </View>
+        
+        <Text style={styles.titulo}>{noticia.titulo}</Text>
+        <Text style={styles.resumo}>{noticia.resumo}</Text>
+      </View>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
-    padding: 18,
     marginHorizontal: 15,
     marginVertical: 10,
-    // Fundo branco puro
     backgroundColor: '#FFFFFF', 
     borderRadius: 12,
-    
-    // NOVO: Sombra Mais Forte para Efeito 3D/Elevado (Estilo Minimalista)
+    overflow: 'hidden', // Importante para que a imagem respeite o borderRadius do card
     elevation: 8, 
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15, 
     shadowRadius: 5.65,
   },
+  // NOVO: Estilo para o retângulo da imagem
+  imagem: {
+    width: '100%',
+    height: 180, // Altura fixa para o retângulo
+    resizeMode: 'cover',
+  },
+  infoContainer: {
+    padding: 18,
+  },
   categoriaTag: {
     alignSelf: 'flex-start',
-    // Cor de destaque (Verde vibrante do exemplo)
-    backgroundColor: '#00C853', 
+    backgroundColor: '#6A0DAD', 
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 6,
@@ -50,12 +63,10 @@ const styles = StyleSheet.create({
     fontSize: 19,
     fontWeight: 'bold', 
     marginBottom: 8,
-    // Texto Principal Preto
     color: '#222222' 
   },
   resumo: { 
     fontSize: 14, 
-    // Texto Secundário Cinza
     color: '#555555'
   },
 });

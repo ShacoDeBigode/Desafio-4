@@ -1,23 +1,18 @@
-import React, { useEffect, useState } from 'react'; 
-import { View, Text, StyleSheet, Button, ScrollView, Image, FlatList, ActivityIndicator } from 'react-native';
+// src/screens/Screens.js
+import React, { useEffect, useState, useCallback } from 'react'; 
+import { View, Text, StyleSheet, Button, ScrollView, Image, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 
-// Caminho corrigido para o arquivo de dados.
 import { buscarNoticiasDaAPI } from '../data.js'; 
 import CardNoticia from '../components/CardNoticia'; 
 
-// Importa a imagem local da pasta src/assets/
 import logoImage from '../assets/logo.png'; 
 
-// Cores para o Novo Design Minimalista Moderno
-const ACCENT_COLOR = '#00C853'; // Verde Vibrante (para destaque e tags)
-const PRIMARY_COLOR = '#1A5276'; // Mantido para o Drawer Ativo
+const PRIMARY_COLOR = '#6A0DAD'; 
+const ACCENT_COLOR = '#8A2BE2'; 
 
-
-// --- Tela de Detalhes da Notícia ---
 export const DetalheNoticiaScreen = ({ route, navigation }) => {
   const { noticia } = route.params;
 
-  // Customiza o Header dinamicamente com o título da notícia.
   useEffect(() => {
     navigation.setOptions({
       title: noticia.titulo,
@@ -26,15 +21,19 @@ export const DetalheNoticiaScreen = ({ route, navigation }) => {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.detalheCategoria}>{noticia.categoria}</Text>
-      <Text style={styles.detalheTitulo}>{noticia.titulo}</Text>
-      {/* Tipografia aprimorada para melhor legibilidade. */}
-      <Text style={styles.detalheConteudo}>{noticia.conteudo}</Text>
+      <Image 
+        source={{ uri: noticia.imagemUrl }}
+        style={styles.detalheImagem}
+      />
+      <View style={styles.detalheTextoContainer}>
+        <Text style={styles.detalheCategoria}>{noticia.categoria}</Text>
+        <Text style={styles.detalheTitulo}>{noticia.titulo}</Text>
+        <Text style={styles.detalheConteudo}>{noticia.conteudo}</Text>
+      </View>
     </ScrollView>
   );
 };
 
-// --- Tela Sobre (Drawer) ---
 export const SobreScreen = ({ navigation }) => {
   return (
     <View style={styles.sobreContainer}>
@@ -59,23 +58,31 @@ export const SobreScreen = ({ navigation }) => {
   );
 };
 
-// --- Telas de Lista (Com Lógica de Fetch) ---
 const ListaNoticiasBase = ({ navigation, tituloLista }) => {
-  // Estados para armazenar os dados e controlar o loading.
   const [noticias, setNoticias] = useState([]);
   const [loading, setLoading] = useState(true); 
+  // NOVO: Estado para o Pull-to-Refresh
+  const [refreshing, setRefreshing] = useState(false); 
 
+  // Função para carregar notícias (agora é a base do refresh também)
+  const carregarNoticias = useCallback(async () => {
+    setLoading(true); 
+    const dados = await buscarNoticiasDaAPI(tituloLista);
+    setNoticias(dados);
+    setLoading(false); 
+  }, [tituloLista]);
+
+  // Função chamada no Pull-to-Refresh
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await carregarNoticias();
+    setRefreshing(false);
+  }, [carregarNoticias]);
+
+  // Carrega as notícias ao montar ou mudar a categoria
   useEffect(() => {
-    // Função assíncrona para buscar os dados na API estável.
-    const carregarNoticias = async () => {
-      setLoading(true); 
-      const dados = await buscarNoticiasDaAPI(tituloLista);
-      setNoticias(dados);
-      setLoading(false); 
-    };
-
     carregarNoticias();
-  }, [tituloLista]); 
+  }, [carregarNoticias]); 
 
   const renderItem = ({ item }) => (
     <CardNoticia 
@@ -87,7 +94,6 @@ const ListaNoticiasBase = ({ navigation, tituloLista }) => {
   return (
     <FlatList 
       ListHeaderComponent={() => (
-        // NOVO: Título da Seção como uma Tag personalizada (o "quadrado")
         <View style={styles.secaoTituloContainer}>
           <Text style={styles.secaoTituloTexto}>{tituloLista}</Text>
         </View>
@@ -96,7 +102,14 @@ const ListaNoticiasBase = ({ navigation, tituloLista }) => {
       renderItem={renderItem}
       keyExtractor={item => item.id.toString()}
       style={styles.listaContainer}
-      // Componente exibido quando a lista está vazia.
+      // NOVO: Adiciona o RefreshControl
+      refreshControl={
+        <RefreshControl 
+          refreshing={refreshing} 
+          onRefresh={onRefresh} 
+          tintColor={PRIMARY_COLOR} // Cor do spinner roxo
+        />
+      }
       ListEmptyComponent={() => loading ? (
         <ActivityIndicator size="large" color={ACCENT_COLOR} style={{ marginTop: 50 }} />
       ) : (
@@ -114,51 +127,66 @@ export const ListaEsportesScreen = ({ navigation }) => (
   <ListaNoticiasBase navigation={navigation} tituloLista="Esportes" />
 );
 
+export const ListaMusicaScreen = ({ navigation }) => (
+  <ListaNoticiasBase navigation={navigation} tituloLista="Música" />
+);
 
-// Estilos
+export const ListaTendenciasScreen = ({ navigation }) => (
+  <ListaNoticiasBase navigation={navigation} tituloLista="Tendências" />
+);
+
+export const ListaModaScreen = ({ navigation }) => (
+  <ListaNoticiasBase navigation={navigation} tituloLista="Moda" />
+);
+
+export const ListaTVScreen = ({ navigation }) => (
+  <ListaNoticiasBase navigation={navigation} tituloLista="TV" />
+);
+
+
 const styles = StyleSheet.create({
-    // Estilos de Fundo Geral (Detalhes da Notícia e Container Geral).
     container: { 
       flex: 1, 
-      padding: 15,
-      // Fundo Quase Branco (Minimalista)
-      backgroundColor: '#F8F8F8' 
+      backgroundColor: '#FFFFFF' 
     },
-    // NOVO: Container para o título da seção (o "quadrado personalizado")
     secaoTituloContainer: {
-        alignSelf: 'flex-start', // Alinha a "tag" à esquerda
-        backgroundColor: ACCENT_COLOR, // Usa a cor de destaque (verde) para o fundo
-        paddingVertical: 8, // Preenchimento vertical interno
-        paddingHorizontal: 15, // Preenchimento horizontal interno
-        borderRadius: 10, // Cantos arredondados para a "tag"
-        marginHorizontal: 15, // Margem externa para não grudar na borda
-        marginTop: 20, // Espaçamento superior
-        marginBottom: 15, // Espaçamento inferior
-        elevation: 4, // Sombra para dar um leve efeito 3D
+        alignSelf: 'flex-start', 
+        backgroundColor: PRIMARY_COLOR, 
+        paddingVertical: 8, 
+        paddingHorizontal: 15, 
+        borderRadius: 10, 
+        marginHorizontal: 15, 
+        marginTop: 20, 
+        marginBottom: 15, 
+        elevation: 4, 
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         shadowRadius: 3,
     },
-    // NOVO: Estilo para o texto dentro do título da seção
     secaoTituloTexto: {
-        fontSize: 20, // Tamanho da fonte
-        fontWeight: 'bold', // Negrito
-        color: '#FFFFFF', // Texto branco para contraste no fundo verde
-        textTransform: 'uppercase', // Texto em maiúsculas
+        fontSize: 20, 
+        fontWeight: 'bold', 
+        color: '#FFFFFF', 
+        textTransform: 'uppercase', 
     },
-
-    // Estilo para o fundo das listas.
     listaContainer: {
         flex: 1,
-        backgroundColor: '#F8F8F8' 
+        backgroundColor: '#FFFFFF' 
     },
-    // Estilos da Tela DetalheNoticiaScreen 
+    detalheImagem: {
+        width: '100%',
+        height: 250, 
+        resizeMode: 'cover',
+        marginBottom: 10,
+    },
+    detalheTextoContainer: {
+        paddingHorizontal: 15,
+    },
     detalheCategoria: { 
       fontSize: 14, 
       fontWeight: '600', 
-      // Cor de destaque vibrante (Verde)
-      color: ACCENT_COLOR, 
+      color: PRIMARY_COLOR, 
       marginTop: 10,
       textTransform: 'uppercase'
     },
@@ -166,13 +194,11 @@ const styles = StyleSheet.create({
       fontSize: 28, 
       fontWeight: 'bold', 
       marginVertical: 15,
-      // Título da Notícia em Preto
       color: '#000000' 
     },
     detalheConteudo: { 
       fontSize: 18, 
       lineHeight: 30, 
-      // Conteúdo em Cinza Escuro
       color: '#444444', 
       marginBottom: 20
     },
@@ -182,7 +208,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 50
     },
-    // Estilos da Tela Sobre 
     sobreContainer: { flex: 1, padding: 20, alignItems: 'center', backgroundColor: '#fff' },
     sobreHeader: { fontSize: 28, fontWeight: 'bold', marginBottom: 20 },
     sobreImage: { 
